@@ -89,7 +89,9 @@ void checkCylinderCollision()
        normal = new PVector(location.x - position.x, 0, location.z - position.y).normalize();
        location.x = position.x + normal.x * (RADIUS +  cylinder.CYLINDER_BASE);
        location.z = position.y + normal.z * (RADIUS +  cylinder.CYLINDER_BASE);
-       velocity = velocity.sub(normal.mult(2*PVector.dot(velocity, normal))).div(-2);
+       velocity = velocity.sub(normal.mult(2*PVector.dot(velocity, normal)));
+       velocity.x *= -0.5;
+       velocity.y *= -0.5;
    }
  }
   
