@@ -136,7 +136,11 @@ color convolutionValue(PImage original, int x, int y, float[][] kernel, float we
     for (int j = 0; j < N; j++) {
 
       int xPosition = x + i - offset;
+      if(xPosition >= img.width) continue;
+      
       int yPosition = y + j - offset;
+      if(yPosition >= img.height) continue;
+      
       int pixelPosition = xPosition + original.width*yPosition;
 
       pixelPosition = constrain(pixelPosition, 0, original.pixels.length - 1);
