@@ -303,10 +303,10 @@ List<PVector> sortCorners(List<PVector> quad) {
 Boolean checkQuad(PVector c1, PVector c2, PVector c3, PVector c4){
  
   //the smallest allowed area od the quad is one tenth of the width and height of the image
-  return isConvex(c1, c2, c3, c4) && validArea(c1, c2, c3, c4, img.width*img.height, 0) && nonFlatQuad(c1, c2, c3, c4);
+  return isConvex(c1, c2, c3, c4) && validArea(c1, c2, c3, c4, img.width*img.height, img.width*img.height/100) && nonFlatQuad(c1, c2, c3, c4);
 }
 
-List<PVector> drawQuads(List<PVector> lines){ //<>//
+List<PVector> drawQuads(List<PVector> lines){ //<>// //<>//
 
 this.build(lines, img.width, img.height);
 List<PVector> accLines = new ArrayList<PVector>();
@@ -361,6 +361,7 @@ for (int[] quad : this.findCycles()) {
 return accLines;
 }
 
+//we draw in the same way as in the hough transform before, but now we draw only the lines that are contained in the recognized quad
 void linePVector(PVector p1){
     
     int x0 = 0;
@@ -396,7 +397,6 @@ void linePVector(PVector p1){
     linesImg.line(x2, y2, x3, y3);
     }
     }
-     
 }
 
 }

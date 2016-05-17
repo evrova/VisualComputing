@@ -3,15 +3,7 @@ PImage img;
 PImage result;
 PImage resIntensity;
 PImage edgeImg;
-HScrollbar thresholdBar;
-HScrollbar hueLowerThreshold;
-HScrollbar hueUpperThreshold;
 
-float brightThreshold;
-float THRESHOLD_MAX = 270;
-
-float hueLowerBound;
-float hueUpperBound;
 float[][] convolutionKernel = { { 0, 0, 0 }, { 0, 2, 0}, { 0, 0, 0}};
 float [][] gaussianKernel = {{9, 12, 9}, {12, 15, 12}, {9, 12, 9}};
 
@@ -27,22 +19,13 @@ void settings() {
 }
 
 void setup() {
-  img = loadImage("board4.jpg");
-  thresholdBar = new HScrollbar(0, height - 20, width, 20);
-
-  hueUpperThreshold = new HScrollbar(0, height - 50, width, 20);
-  hueLowerThreshold = new HScrollbar(0, height - 20, width, 20);
-
-  brightThreshold = 128;
+  
+  img = loadImage("board1.jpg");
   result = createImage(img.width, img.height, ALPHA);
   resIntensity = createImage(img.width, img.height, ALPHA);
   edgeImg = createImage(img.width, img.height, ALPHA);
   quadgraph = new QuadGraph();
-  
-  linesImg = createGraphics(800, 600);
-
-  hueLowerBound = 0;
-  hueUpperBound = 0;
+  linesImg = createGraphics(img.width, img.height);
   noLoop(); // no interactive behaviour: draw() will be called only once.
 }
 
@@ -59,14 +42,13 @@ void draw() {
   
   //displaying the image
   image(img, 0, 0);
-  List<PVector> lines = hough(edgeImg, nLines);
   image(edgeImg, 1200, 0);
-  getIntersections(quadgraph.drawQuads(lines));
+  getIntersections(quadgraph.drawQuads(hough(edgeImg, nLines)));
   //drawing the orange lines separately at the end
   image(linesImg, 0, 0);
 }
 
-
+//Function needed for the beggining of the first Image processing assignment
 void binaryFilter(PImage original, color c1, color c2, float threshold)
 { 
   for (int i = 0; i < original.width * original.height; ++i) {
@@ -85,11 +67,13 @@ void binaryFilter(PImage original, color c1, color c2, float threshold)
   result.updatePixels();
 }
 
+//Function needed for the beggining of the first Image processing assignment
 void invertedBinaryFilter(PImage original, color c1, color c2, float threshold)
 {
   binaryFilter(original, c2, c1, threshold); //we just change the colors
 }
 
+//Function needed for the beggining of the first Image processing assignment
 void hueMapping(PImage original, float lowerBound, float upperBound)
 {
   float hueValue;
@@ -110,16 +94,6 @@ void hueMapping(PImage original, float lowerBound, float upperBound)
   result.updatePixels();
 }
 
-void updateBrightnessThreshold()
-{
-  brightThreshold = (1 - thresholdBar.getPos()) * THRESHOLD_MAX;
-}
-
-void updateHueThresholds()
-{
-  hueUpperBound = hueUpperThreshold.getPos()*255;
-  hueLowerBound = hueLowerThreshold.getPos()*255;
-}
 
 PImage convolute(PImage original, float[][] kernel, boolean blurInColor) {
   // create a greyscale image (type: ALPHA) for output
