@@ -136,10 +136,10 @@ color convolutionValue(PImage original, int x, int y, float[][] kernel, float we
     for (int j = 0; j < N; j++) {
 
       int xPosition = x + i - offset;
-      if(xPosition >= img.width) continue;
+      if(xPosition >= img.width || xPosition < 0) continue;
       
       int yPosition = y + j - offset;
-      if(yPosition >= img.height) continue;
+      if(yPosition >= img.height || yPosition < 0) continue;
       
       int pixelPosition = xPosition + original.width*yPosition;
 
@@ -242,7 +242,7 @@ void HSBMapping(PImage img) {
 
     int s = img.pixels[i];
     //filtering the green hue and the small values of the saturation
-    if (hue(s) < 70 || hue(s) > 137 || saturation(s) < 100) {
+    if (hue(s) < 70 || hue(s) > 137 || saturation(s) < 60) {
       result.pixels[i] = color(0);
     } else {
       result.pixels[i] = color(255);
