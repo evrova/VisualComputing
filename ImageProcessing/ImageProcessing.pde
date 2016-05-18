@@ -159,11 +159,11 @@ color convolutionValue(PImage original, int x, int y, float[][] kernel, float we
 
   if (blurInColor)
   {
-    red = Math.abs(red)/weight;
-    green = Math.abs(green)/weight;
-    blue = Math.abs(blue)/weight;
-    //- and divide them by the weight
-    return color(red, green, blue);
+  red = Math.abs(red)/weight;
+  green = Math.abs(green)/weight;
+  blue = Math.abs(blue)/weight;
+  //- and divide them by the weight
+  return color(red, green, blue);
   }
   //if grayscale
   brightness = Math.abs(brightness)/weight;
@@ -242,7 +242,7 @@ void HSBMapping(PImage img) {
 
     int s = img.pixels[i];
     //filtering the green hue and the small values of the saturation
-    if (hue(s) < 70 || hue(s) > 137 || saturation(s) < 30) {
+    if (hue(s) < 70 || hue(s) > 137 || saturation(s) < 100) {
       result.pixels[i] = color(0);
     } else {
       result.pixels[i] = color(255);
