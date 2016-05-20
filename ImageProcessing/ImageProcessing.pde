@@ -215,9 +215,7 @@ void sobel(PImage img) {
 
       buffer[x + y*img.width] = compoundSum;
 
-      if (max < compoundSum) {
-        max = compoundSum;
-      }
+      max = max(max, compoundSum);
     }
   }
 
