@@ -242,7 +242,7 @@ void HSBMapping(PImage img) {
 
     int s = img.pixels[i];
     //filtering the green hue and the small values of the saturation
-    if (hue(s) < 70 || hue(s) > 137 || saturation(s) < 60) {
+    if (hue(s) < 70 || hue(s) > 137 || saturation(s) < 60  || brightness(s) > 190) {
       result.pixels[i] = color(0);
     } else {
       result.pixels[i] = color(255);
