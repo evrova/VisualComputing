@@ -44,6 +44,7 @@ float angleZ = 0;
 
 float rotateX = 0;
 float rotateZ = 0;
+PVector rot = new PVector(rotateX, 0, rotateZ);
 
 
 
@@ -76,7 +77,7 @@ void setup() {
   String []args = {"Image processing window"};
   PApplet.runSketch(args, imgproc);
 
-  //PVector rot = imgproc.getRotation();
+  //PVector rot = imgproc.getation();
   // where getRotation could be a getter
   //for the rotation angles you computed previously
   
@@ -197,14 +198,14 @@ void drawGame(){
   if(!Float.isNaN(rot.x) && !Float.isNaN(rot.z)){
       rotateX = rot.x;
       rotateZ = rot.z;
+       rotateX = constrain(rot.x, -PI/3, PI/3);
+     rotateZ = constrain(rot.z, -PI/3, PI/3);
       
   }
-    rotateX = constrain(rot.x, -PI/3, PI/3);
-      rotateZ = constrain(rot.y, -PI/3, PI/3);
+   
     rotateX(rotateX);
     rotateZ(rotateZ);
-    System.out.println("When the intersections are not detected, rotateX is " + rotateX + " and rotateZ is + " + rotateZ);
-  
+   
   box(plateLength, plateHeight, plateLength);
 
   

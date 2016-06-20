@@ -59,12 +59,12 @@ void setup() {
   try{
     File f = new File("testvideo.mp4");
     b = f.exists();
-    System.out.println(b);
+    //System.out.println(b);
     if(b){
     cam = new Movie(this, f.getAbsolutePath());
     }
   }catch(Exception e){
-    e.printStackTrace();
+    //e.printStackTrace();
   }
   cam.loop();
   //edgeImg = createImage(640, 480, ALPHA);
