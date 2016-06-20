@@ -5,6 +5,8 @@ class Cylinder {
   private float cylinderHeight = 100;
   private int cylinderResolution = 40;
   
+  ArrayList<PVector> positions;
+  
   PShape cylinderShape, openCylinder, topCylinder, bottomCylinder;
   
   Cylinder(){

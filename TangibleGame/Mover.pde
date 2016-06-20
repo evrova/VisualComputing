@@ -44,22 +44,45 @@ class Mover {
   }
   
   //check if the sphere hits a wall
-  void checkEdges() {
-    if(sphereLocation.x - sphereRadius < -plateLength/2){
-      velocity.x = -velocity.x/2;
-      sphereLocation.x = -plateLength/2+sphereRadius;
-    } else if(sphereLocation.x + sphereRadius > plateLength/2){
-      velocity.x = -velocity.x/2;
-      sphereLocation.x = plateLength/2-sphereRadius;
-    }
-    if(sphereLocation.z + sphereRadius > plateLength/2){
-      velocity.z = -velocity.z/2;
-      sphereLocation.z = plateLength/2-sphereRadius;
-    } else if(sphereLocation.z - sphereRadius < -plateLength/2){
-      velocity.z = -velocity.z/2;
-      sphereLocation.z = -plateLength/2+sphereRadius;
-    }
-  }
+  void checkEdges()
+{
+   if(sphereLocation.x >= plateLength/2 - RADIUS)
+   {
+       prevLocation = currLocation;
+       currLocation = sphereLocation.mag();
+       isWall = true;
+       newScore(isWall, currLocation - prevLocation);
+       sphereLocation.x = plateLength/2 - RADIUS;
+       velocity.x = -velocity.x/2;
+   }
+   if(sphereLocation.x <= -plateLength/2 + RADIUS)
+   {
+       prevLocation = currLocation;
+       currLocation = sphereLocation.mag();
+       isWall = true;
+       newScore(isWall, currLocation - prevLocation);
+       sphereLocation.x = -plateLength/2 + RADIUS;
+       velocity.x = velocity.x/(-2);
+   }
+   if(sphereLocation.z >= plateLength/2 - RADIUS)
+   {
+     prevLocation = currLocation;
+     currLocation = sphereLocation.mag();
+     isWall = true;
+     newScore(isWall, currLocation - prevLocation);
+     sphereLocation.z = plateLength/2 - RADIUS;
+     velocity.z = velocity.z/(-2);
+   }
+   if(sphereLocation.z <= -plateLength/2 + RADIUS)
+   {
+     prevLocation = currLocation;
+     currLocation = sphereLocation.mag();
+     isWall = true;
+      newScore(isWall, currLocation - prevLocation);
+     sphereLocation.z = -plateLength/2 + RADIUS;
+     velocity.z = velocity.z/(-2);
+   }  
+}
   
   void checkCylinderCollision(ArrayList<PVector> positions){
     Cylinder cylinder = new Cylinder();

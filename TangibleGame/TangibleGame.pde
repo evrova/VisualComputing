@@ -1,10 +1,31 @@
 import processing.video.*;
 
+PShape box;
+PGraphics topView;
+
+
+float decreaseTopView = 0.58;
+float score;
+float prevScore;
+boolean isWall;
+int multPrevScore;
+PGraphics barChart;
+ArrayList<Float> scoring;
+int scoreFrameRate;
+float prevLocation;
+float currLocation;
+
+PGraphics scoreboard;
+boolean shift;
+PGraphics bottomSurface;
+
 //define the background color and the dimension of the sphere and the plate
 float bgColor = 240;
 float plateLength = 400;
 float plateHeight = 20;
 float sphereRadius = 10;
+int topViewWidth = (int)Math.ceil(plateLength*decreaseTopView + 10);
+int topViewHeight = (int)Math.ceil(plateLength*decreaseTopView);
 
 //define the coordinate of the 4 side of the plate in adding-cylinders mode
 float leftSide, rightSide, topSide, bottomSide;
@@ -38,12 +59,13 @@ ImageProcessing imgproc;
 
 
 void settings() {
-  size(1000, 600, P3D);
+   size(1000,1000, P3D);
 }
 void setup() {
   noStroke();
   mover = new Mover();
   cylinder = new Cylinder();
+  // cylinder.positions = new ArrayList<PVector>();
   
   pWidth = width;
   pHeight = height;
@@ -53,11 +75,27 @@ void setup() {
   imgproc = new ImageProcessing();
   String []args = {"Image processing window"};
   PApplet.runSketch(args, imgproc);
-  
 
   //PVector rot = imgproc.getRotation();
   // where getRotation could be a getter
   //for the rotation angles you computed previously
+  
+  bottomSurface = createGraphics(width, height/3, P2D);
+  box = createShape(BOX, width/3, 20, height/2.5);
+  topViewWidth = (int)Math.ceil(box.getWidth()*decreaseTopView + 10);
+  topViewHeight = (int)Math.ceil(box.getDepth()*decreaseTopView);
+  topView = createGraphics(topViewWidth, topViewHeight, P2D);
+  scoreboard = createGraphics(topViewWidth + 20, topViewHeight, P2D);
+  score = 0;
+  prevScore = 0;
+  isWall = false;
+  multPrevScore = 1;
+  
+  barChart = createGraphics(width - 2*topViewWidth - 40, topViewHeight, P2D);
+  scoring = new ArrayList<Float>();
+  scoreFrameRate = 0;
+  prevLocation = 0;
+  currLocation = sphereLocation.mag();
 
 }
 
@@ -65,6 +103,20 @@ void draw() {
       
    
   drawBasics();
+  drawBottomSurface();
+    image(bottomSurface, 0, 3*height/4);
+    
+    drawTopView();
+    image(topView, 10, 3*height/4 + 10);
+    
+    drawScoreboard();
+    image(scoreboard, topView.width + 20, 3*height/4 + 10);
+    
+    drawBarChart();
+    image(barChart, topView.width + scoreboard.width, 3*height/4 + 10);
+  
+  scoreFrameRate += 1;
+  
   if(keyPressed && keyCode == SHIFT){
     imgproc.cam.pause();
     drawViewMode();
@@ -75,6 +127,7 @@ void draw() {
     imgproc.cam.play();
     drawGame();
     drawSphere();
+    
     
   }
    
@@ -146,7 +199,8 @@ void drawGame(){
       rotateZ = rot.z;
       
   }
-    
+    rotateX = constrain(rot.x, -PI/3, PI/3);
+      rotateZ = constrain(rot.y, -PI/3, PI/3);
     rotateX(rotateX);
     rotateZ(rotateZ);
     System.out.println("When the intersections are not detected, rotateX is " + rotateX + " and rotateZ is + " + rotateZ);
@@ -257,3 +311,98 @@ boolean overlap(PVector sphere, PVector cylinderVector){
   }
   return false;
 }
+//score rising very fast !
+void newScore(boolean isWall, float difference)
+{   
+ 
+   
+    if(isWall)
+    {
+      multPrevScore = -1;
+      score -= mover.velocity.mag();
+    }
+    else
+    {
+      multPrevScore = 1;
+      score += mover.velocity.mag();
+    }
+    
+    score = bounds(score, score, 0);
+    
+    if(score > 0)
+    {
+      prevScore = mover.velocity.mag() * multPrevScore;
+      
+       if(Math.abs(difference) < 10) //if the position of the ball doesn't change much, we have to compress the information we display, not to loose the space with a small novelty of the change of the score
+        {
+          if(scoreFrameRate % 20 == 0)
+          {
+            scoring.add(score);
+          }
+        }
+        else
+        {
+           scoring.add(score);
+        }
+    }
+  
+}
+
+void drawBottomSurface()
+{
+  bottomSurface.beginDraw();
+  bottomSurface.background(0, 230, 230);
+  //we reset the size in case we modify the size of the window (augment/decrement)
+  bottomSurface.setSize(width,height/3);
+  bottomSurface.endDraw();
+}
+
+void drawTopView()
+{
+    topView.beginDraw();
+    topView.background(0, 100, 100);
+    topView.fill(0, 150, 255);
+    topView.noStroke();
+    topView.ellipse(sphereLocation.x*decreaseTopView + topViewWidth/2 - sphereRadius, sphereLocation.z*decreaseTopView + topViewHeight/2, (2*sphereRadius)*decreaseTopView, (2*sphereRadius)*decreaseTopView);
+    
+    topView.fill(255);
+    for(PVector position: cylinders)
+    {
+      topView.ellipse(position.x*decreaseTopView + topViewWidth/2, position.y*decreaseTopView + topViewHeight/2, 2*cylinder.cylinderBaseSize*decreaseTopView, 2*cylinder.cylinderBaseSize*decreaseTopView);
+    }
+    
+    
+    topView.endDraw();
+}
+
+void drawScoreboard()
+{  
+  scoreboard.beginDraw();
+  scoreboard.background(255, 255, 255);
+  scoreboard.textSize(20);
+  scoreboard.fill(0);
+  scoreboard.text("Total Score:\n" + score + "\n\n" + "Velocity :\n" + nf(mover.velocity.mag(), 1, 3) + "\n\n" + "Last score:\n" + prevScore, 10, 15);
+  scoreboard.endDraw();
+}
+void drawBarChart()
+{
+  float rectangleWidth = 10; //ke se menuva so scrolling bar
+  float rectHeight = 0;
+  
+  barChart.beginDraw();
+  barChart.background(155);
+  barChart.fill(0);
+    for(int i = 0; i < scoring.size(); ++i)
+    { 
+      
+       barChart.rect(i*rectangleWidth, barChart.height, rectangleWidth, -scoring.get(i));
+       System.out.println("Score is: " + scoring.get(i));
+    }
+    
+   
+   barChart.endDraw();
+   
+
+}
+
+   
